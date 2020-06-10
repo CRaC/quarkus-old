@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import javax.enterprise.event.Event;
 
+import org.crac.Resource;
 import org.jboss.logging.Logger;
 import org.wildfly.common.cpu.ProcessorInfo;
 
@@ -713,7 +714,7 @@ public class VertxHttpRecorder {
         return new GracefulShutdownFilter();
     }
 
-    private static class WebDeploymentVerticle extends AbstractVerticle {
+    private static class WebDeploymentVerticle extends AbstractVerticle implements Resource {
 
         private HttpServer httpServer;
         private HttpServer httpsServer;
@@ -734,6 +735,8 @@ public class VertxHttpRecorder {
             this.launchMode = launchMode;
             this.domainSocketOptions = domainSocketOptions;
             this.insecureRequests = insecureRequests;
+            org.crac.Core.getGlobalContext().register(this);
+
         }
 
         @Override
@@ -881,6 +884,24 @@ public class VertxHttpRecorder {
             if (domainSocketServer != null) {
                 domainSocketServer.close(handleClose);
             }
+        }
+
+        @Override
+        public void beforeCheckpoint(org.crac.Context<? extends Resource> context) throws Exception {
+            CountDownLatch latch = new CountDownLatch(1);
+            stop(Future.future(event -> {
+                latch.countDown();
+            }));
+            latch.await();
+        }
+
+        @Override
+        public void afterRestore(org.crac.Context<? extends Resource> context) throws Exception {
+            CountDownLatch latch = new CountDownLatch(1);
+            start(Future.future(event -> {
+                latch.countDown();
+            }));
+            latch.await();
         }
     }
 
