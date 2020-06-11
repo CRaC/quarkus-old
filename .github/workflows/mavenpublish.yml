@@ -13,13 +13,11 @@ jobs:
       with:
         java-version: 1.8
 
-    - run: ./mvnw -B install
+    - run: 
+        ./mvnw -B install
         -Dmaven.source.skip=true -DskipTests -DskipITs -DskipDocs
-      env:
-        GITHUB_TOKEN: ${{ secrets.PACKAGES }}
-        MAVEN_OPTS: -Xmx1563m
-
-    - run: ./mvnw -B deploy
+        &&
+        ./mvnw -B deploy
         -Dmaven.source.skip=true -DskipTests -DskipITs -DskipDocs
         -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${GITHUB_REPOSITORY}
       env:
