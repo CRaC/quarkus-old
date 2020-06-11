@@ -4,6 +4,8 @@ on:
   push:
     branches-ignore:
       - 'dependabot/**'
+      - 'crac-master'
+      - 'crac-release'
     paths-ignore:
       - 'docs/src/main/asciidoc/**'
       - 'README.md'
