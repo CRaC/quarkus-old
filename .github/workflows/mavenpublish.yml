@@ -2,6 +2,7 @@ name: Maven Package
 
 on:
   push:
+    branches: [ "crac-release" ]
 
 jobs:
   build:
@@ -12,13 +13,15 @@ jobs:
       with:
         java-version: 1.8
 
-    - run: MAVEN_OPTS="-Xmx1563m" ./mvnw -B install
-        -DskipTests -DskipITs -DskipDocs
+    - run: ./mvnw -B install
+        -Dmaven.source.skip=true -DskipTests -DskipITs -DskipDocs
       env:
         GITHUB_TOKEN: ${{ secrets.PACKAGES }}
+        MAVEN_OPTS: -Xmx1563m
 
-    - run: MAVEN_OPTS="-Xmx1563m" ./mvnw -B -U deploy
-        -DskipTests -DskipITs -DskipDocs
+    - run: ./mvnw -B deploy
+        -Dmaven.source.skip=true -DskipTests -DskipITs -DskipDocs
         -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${GITHUB_REPOSITORY}
       env:
         GITHUB_TOKEN: ${{ secrets.PACKAGES }}
+        MAVEN_OPTS: -Xmx1563m
