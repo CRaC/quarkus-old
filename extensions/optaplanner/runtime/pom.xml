@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-optaplanner-parent</artifactId>
-        <version>1-crac</version>
+        <version>2-crac</version>
     </parent>
 
     <artifactId>quarkus-optaplanner</artifactId>
