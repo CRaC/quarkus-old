@@ -80,7 +80,7 @@
         </repository>
         <repository>
             <id>github</id>
-            <url>https://maven.pkg.github.com/org-crac/org.crac</url>
+            <url>https://maven.pkg.github.com/crac/org.crac</url>
         </repository>
    </repositories>
 
