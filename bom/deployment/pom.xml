@@ -14,7 +14,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <commons-compress.version>1.20</commons-compress.version>
+        <commons-compress.version>1.21</commons-compress.version>
     </properties>
 
     <dependencyManagement>
