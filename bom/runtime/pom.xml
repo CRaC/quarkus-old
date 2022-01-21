@@ -109,7 +109,7 @@
         <httpasync.version>4.1.4</httpasync.version>
         <cronutils.version>9.0.2</cronutils.version>
         <quartz.version>2.3.2</quartz.version>
-        <h2.version>1.4.197</h2.version>  <!-- keep 1.4.197 as newer versions have severe regressions -->
+        <h2.version>2.1.210</h2.version>  <!-- keep 1.4.197 as newer versions have severe regressions -->
         <postgresql-jdbc.version>42.2.13</postgresql-jdbc.version>
         <mariadb-jdbc.version>2.6.0</mariadb-jdbc.version>
         <mysql-jdbc.version>8.0.20</mysql-jdbc.version>
