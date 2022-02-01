@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 
 import javax.enterprise.event.Event;
 
+import org.crac.Resource;
 import org.jboss.logging.Logger;
 import org.wildfly.common.cpu.ProcessorInfo;
 
@@ -70,14 +71,7 @@ import io.quarkus.vertx.http.runtime.filters.accesslog.AccessLogHandler;
 import io.quarkus.vertx.http.runtime.filters.accesslog.AccessLogReceiver;
 import io.quarkus.vertx.http.runtime.filters.accesslog.DefaultAccessLogReceiver;
 import io.quarkus.vertx.http.runtime.filters.accesslog.JBossLoggingAccessLogReceiver;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Context;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Handler;
-import io.vertx.core.Promise;
-import io.vertx.core.Verticle;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.Cookie;
 import io.vertx.core.http.CookieSameSite;
@@ -906,7 +900,7 @@ public class VertxHttpRecorder {
         return new GracefulShutdownFilter();
     }
 
-    private static class WebDeploymentVerticle extends AbstractVerticle {
+    private static class WebDeploymentVerticle extends AbstractVerticle implements Resource {
 
         private HttpServer httpServer;
         private HttpServer httpsServer;
@@ -932,6 +926,7 @@ public class VertxHttpRecorder {
             this.insecureRequests = insecureRequests;
             this.quarkusConfig = quarkusConfig;
             this.connectionCount = connectionCount;
+            org.crac.Core.getGlobalContext().register(this);
         }
 
         @Override
@@ -1160,6 +1155,24 @@ public class VertxHttpRecorder {
 
         private String propertyWithProfilePrefix(String portPropertyName) {
             return "%" + launchMode.getDefaultProfile() + "." + portPropertyName;
+        }
+
+        @Override
+        public void beforeCheckpoint(org.crac.Context<? extends Resource> context) throws Exception {
+            Promise<Void> p = Promise.promise();
+            stop(p);
+            CountDownLatch latch = new CountDownLatch(1);
+            p.future().onComplete(event -> latch.countDown());
+            latch.await();
+        }
+
+        @Override
+        public void afterRestore(org.crac.Context<? extends Resource> context) throws Exception {
+            Promise<Void> p = Promise.promise();
+            start(p);
+            CountDownLatch latch = new CountDownLatch(1);
+            p.future().onComplete(event -> latch.countDown());
+            latch.await();
         }
     }
 

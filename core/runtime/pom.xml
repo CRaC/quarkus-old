@@ -216,6 +216,8 @@
                         <!-- This is needed because it contains some jar handling classes -->
                         <runnerParentFirstArtifact>io.smallrye.common:smallrye-common-io</runnerParentFirstArtifact>
 
+                        <runnerParentFirstArtifact>io.github.crac:org-crac</runnerParentFirstArtifact>
+
                     </runnerParentFirstArtifacts>
                     <excludedArtifacts>
                         <excludedArtifact>io.smallrye:smallrye-config</excludedArtifact>

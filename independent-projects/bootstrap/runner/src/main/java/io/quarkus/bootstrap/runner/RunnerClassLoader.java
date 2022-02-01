@@ -7,6 +7,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.crac.Context;
+import org.crac.Resource;
 
 /**
  * Classloader used with the fast-jar package type.
@@ -21,7 +23,7 @@ import java.util.Set;
  * The implementation also contains optimizations that allow the ClassLoader to keep a minimum number of jars open
  * while also preventing the lookup of the entire classpath for missing resources in known directories (like META-INF/services).
  */
-public final class RunnerClassLoader extends ClassLoader {
+public final class RunnerClassLoader extends ClassLoader implements Resource {
 
     /**
      * A map of resources by dir name. Root dir/default package is represented by the empty string
@@ -50,6 +52,7 @@ public final class RunnerClassLoader extends ClassLoader {
         this.nonExistentResources = nonExistentResources;
         this.fullyIndexedDirectories = fullyIndexedDirectories;
         this.directlyIndexedResourcesIndexMap = directlyIndexedResourcesIndexMap;
+        org.crac.Core.getGlobalContext().register(this);
     }
 
     @Override
@@ -286,5 +289,21 @@ public final class RunnerClassLoader extends ClassLoader {
             }
             this.postBootPhase = true;
         }
+    }
+
+    @Override
+    public void beforeCheckpoint(Context<? extends Resource> ctx) {
+        synchronized (this.currentlyBufferedResources) {
+            for (int i = 0; i < currentlyBufferedResources.length; ++i) {
+                if (currentlyBufferedResources[i] != null) {
+                    currentlyBufferedResources[i].resetInternalCaches();
+                    currentlyBufferedResources[i] = null;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void afterRestore(Context<? extends Resource> ctx) {
     }
 }
